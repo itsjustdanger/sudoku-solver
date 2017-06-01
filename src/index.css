@@ -1,5 +1,36 @@
-body {
+html, body, div, a, span, input, p, h1, h2, h3, h4, h5, h6 {
   margin: 0;
   padding: 0;
+}
+
+select, textarea, input {
+  border: none;
+  outline: none;
+}
+
+body {
   font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.sudoku-board {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px auto;
+  width: 456px;
+}
+
+.square {
+  border: .5px solid #eee;
+  box-sizing: border-box;
+  height: 50px;
+  text-align: center;
+  width: 50px;
+}
+
+.sub-square {
+  border: 1px solid black;
+  width: 150px;
+  height: 150px;
 }

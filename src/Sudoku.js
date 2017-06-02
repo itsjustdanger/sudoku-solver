@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Square from './Square.js';
 
 export default class Sudoku extends React.Component {
@@ -18,7 +19,6 @@ export default class Sudoku extends React.Component {
 
           for (let subCol = subColStart; subCol < subColEnd; subCol++) {
             square.push(board[subRow][subCol]);
-            console.log(subRow + subCol)
           }
         }
 
@@ -28,22 +28,26 @@ export default class Sudoku extends React.Component {
 
     return (
       <div className="sudoku-board">
-        {subSquares.map((subSquare) => {
+        {subSquares.map((subSquare, index) => {
           return (
-            <div className="sub-square">
-              {
-                subSquare.map((square) => {
-                  return (
-                    <Square value={square} />
-                  );
-                })
-              }
+            <div key={index} className="sub-square">
+              {subSquare.map((square) => {
+                return (
+                  <Square
+                    key={square.loc}
+                    handleChange={this.props.handleChange.bind(this, square.loc)}
+                    value={square.value} />
+                );
+              })}
             </div>
           );
-        })
-
-        }
+        })}
       </div>
     );
   }
 }
+
+Sudoku.propTypes = {
+  board: PropTypes.array.isRequired,
+  handleChange: PropTypes.func.isRequired,
+};

@@ -24,9 +24,11 @@ body {
 }
 
 .sudoku-board {
+  border: 2px solid #000;
   display: flex;
   flex-wrap: wrap;
-  width: 456px;
+  position: relative;
+  width: 450px;
 }
 
 .square {
@@ -38,8 +40,40 @@ body {
   width: 50px;
 }
 
-.sub-square {
-  border: 1px solid black;
-  width: 150px;
-  height: 150px;
+.square:focus {
+  border: 2px solid #000;
+}
+
+.cross-line {
+  position: absolute;
+  background: #000;
+}
+
+.cross-line.top,
+.cross-line.bottom {
+  width: 450px;
+  height: 2px;
+  left: 0;
+}
+
+.cross-line.top {
+  top: 150px;
+}
+
+.cross-line.bottom {
+  top: 300px;
+}
+
+.cross-line.left,
+.cross-line.right {
+  height: 450px;
+  width: 2px;
+  top: 0;
+}
+
+.cross-line.left {
+  left: 150px;
+}
+.cross-line.right {
+  left: 300px;
 }

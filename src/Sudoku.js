@@ -19,6 +19,8 @@ export default class Sudoku extends React.Component {
 
     return (
       <div className="sudoku">
+        <h1>sudoku solver</h1>
+        <p>enter initial values and press 'solve'</p>
         <div className="sudoku-board">
           <span className="cross-line top"></span>
           <span className="cross-line bottom"></span>
@@ -27,7 +29,7 @@ export default class Sudoku extends React.Component {
           {squares}
         </div>
         <button className="solve-button" onClick={this.props.solve}>
-          Solve
+          solve
         </button>
       </div>
     );

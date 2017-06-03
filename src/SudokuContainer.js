@@ -47,21 +47,20 @@ squareRowSets.forEach((rowSet) => {
 // Create array of all units combined
 const ALL_UNITS = ROW_UNITS.concat(COL_UNITS).concat(SQUARE_UNITS);
 
-// Populate the units object with keys for each box and values for each
-// of a box's associated units.
-// and the value is an array of the units in which is box is contained.
-// Populate the peers object with keys for each box and values for all
-// a box's unique peers
 BOXES.forEach((box) => {
   UNITS[box] = [];
   PEERS[box] = [];
 
+  // Populate the units object with keys for each box and values for each
+  // of a box's associated units.
   ALL_UNITS.forEach((unit) => {
     if (unit.includes(box)) {
       UNITS[box].push(unit);
     }
   });
 
+  // Populate the peers object with keys for each box and values for all
+  // a box's unique peers
   UNITS[box].forEach((unit) => {
     unit.forEach((peer) => {
       if (!PEERS[box].includes(peer) && peer !== box) {
@@ -79,13 +78,12 @@ export default class SudokuContainer extends React.Component {
     this.setState = this.setState.bind(this);
 
     const board = {};
-    const solution = {};
 
     BOXES.forEach((box) => {
       board[box] = '';
     });
 
-    this.state = {board, solution, solving: false, };
+    this.state = {board};
   }
 
 
@@ -154,12 +152,14 @@ export default class SudokuContainer extends React.Component {
 
       this.eliminate(board);
       this.onlyChoice(board);
+
       const solvedAfter = this._getSolvedBoxes(board).length;
 
       stalled = solvedBefore === solvedAfter;
       console.log(solvedAfter);
+      console.log('checking for invalid board...');
+
       if (this._boardInvalid(board)) {
-        console.log('Invalid Board!');
         return false;
       }
     }
@@ -170,16 +170,19 @@ export default class SudokuContainer extends React.Component {
 
   search(board) {
     console.log('Using elimination strategies...');
-    board = this.reduce(board);
 
-    if (board === false) {
+    const reducedBoard = this.reduce(board);
+    console.log(reducedBoard);
+    if (reducedBoard === false) {
+      console.log('Invalid board recognized!');
       return false;
     }
+
     console.log('Checking for solved board...');
-    console.log(board);
-    if (this._checkSolved(board)) {
+
+    if (this._checkSolved(reducedBoard)) {
       console.log('Solution Found!');
-      return board;
+      return reducedBoard;
     }
 
     let guessBox = '';
@@ -189,19 +192,23 @@ export default class SudokuContainer extends React.Component {
     // the fewest possibilities
     BOXES.forEach((box) => {
       console.log(guessBox);
-      if (board[box].length > 1 && (!guessBox || (guessBox && board[box].length < board[guessBox].length))) {
+      if (reducedBoard[box].length > 1 && (!guessBox || (guessBox && reducedBoard[box].length < reducedBoard[guessBox].length))) {
         guessBox = box;
       }
     });
 
     console.log('Searching tree...');
-    board[guessBox].split('').forEach((value) => {
-      const newBoard = Object.assign({}, board);
-      newBoard[guessBox] = value;
+    const options = reducedBoard[guessBox];
+
+    for (let option = 0; option < guessBox.length; option++) {
+      const newBoard = Object.assign({}, reducedBoard);
+      newBoard[guessBox] = options[option];
       const attempt = this.search(newBoard);
 
       if (attempt) return attempt;
-    });
+    }
+
+    console.log('SHOULD NOT GET HERE!!');
   }
 
 
@@ -259,11 +266,11 @@ export default class SudokuContainer extends React.Component {
    * @return {object}       whether th board is invalid
    */
   _boardInvalid(board) {
-    BOXES.forEach((box) => {
-      if (board[box].length === 0) {
+    for (const box in board) {
+      if (!board[box]) {
         return true;
       }
-    });
+    }
 
     return false;
   }

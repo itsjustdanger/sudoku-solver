@@ -7,6 +7,7 @@
     "react-dom": "^15.5.4"
   },
   "devDependencies": {
+    "gh-pages": "^1.0.0",
     "prop-types": "^15.5.10",
     "react-scripts": "1.0.7"
   },
@@ -14,6 +15,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
-  }
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "homepage": "https://itsjustdanger.github.io/sudoku-solver"
 }

@@ -97,7 +97,6 @@ export default class SudokuContainer extends React.Component {
     if (value && (value < 1 || value > 9)) return;
 
     const board = this.state.board;
-    const solution = this.state.solution;
 
     board[loc] = e.target.value;
 

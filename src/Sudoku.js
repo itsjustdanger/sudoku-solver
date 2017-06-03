@@ -18,12 +18,17 @@ export default class Sudoku extends React.Component {
     }
 
     return (
-      <div className="sudoku-board">
-        <span className="cross-line top"></span>
-        <span className="cross-line bottom"></span>
-        <span className="cross-line left"></span>
-        <span className="cross-line right"></span>
-        {squares}
+      <div className="sudoku">
+        <div className="sudoku-board">
+          <span className="cross-line top"></span>
+          <span className="cross-line bottom"></span>
+          <span className="cross-line left"></span>
+          <span className="cross-line right"></span>
+          {squares}
+        </div>
+        <button className="solve-button" onClick={this.props.solve}>
+          Solve
+        </button>
       </div>
     );
   }
@@ -32,4 +37,5 @@ export default class Sudoku extends React.Component {
 Sudoku.propTypes = {
   board: PropTypes.object.isRequired,
   handleChange: PropTypes.func.isRequired,
+  solve: PropTypes.func.isRequired,
 };

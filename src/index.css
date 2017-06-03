@@ -40,10 +40,6 @@ body {
   width: 50px;
 }
 
-.square:focus {
-  border: 2px solid #000;
-}
-
 .cross-line {
   position: absolute;
   background: #000;

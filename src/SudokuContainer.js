@@ -64,7 +64,7 @@ BOXES.forEach((box) => {
 
   UNITS[box].forEach((unit) => {
     unit.forEach((peer) => {
-      if (!PEERS[box].includes(peer)) {
+      if (!PEERS[box].includes(peer) && peer !== box) {
         PEERS[box].push(peer);
       }
     });
@@ -102,11 +102,10 @@ export default class SudokuContainer extends React.Component {
       const value = board[box];
 
       PEERS[box].forEach((peer) => {
-        board[peer].replace(value, '');
-        console.log(board[peer]);
+        board[peer] = board[peer].replace(value, '');
       });
     });
-    console.log(board);
+
     return board;
   }
 
@@ -158,8 +157,8 @@ export default class SudokuContainer extends React.Component {
       const solvedAfter = this._getSolvedBoxes(board).length;
 
       stalled = solvedBefore === solvedAfter;
-
-      if (this._boardInavlid(board)) {
+      console.log(solvedAfter);
+      if (this._boardInvalid(board)) {
         console.log('Invalid Board!');
         return false;
       }
@@ -177,20 +176,21 @@ export default class SudokuContainer extends React.Component {
       return false;
     }
     console.log('Checking for solved board...');
+    console.log(board);
     if (this._checkSolved(board)) {
       console.log('Solution Found!');
       return board;
     }
 
-    let guessBox = null;
+    let guessBox = '';
 
     console.log('Building search tree...');
     // Iterate through all the boxes and find an unfilled square with
     // the fewest possibilities
     BOXES.forEach((box) => {
-      if (board[box].length > 1 &&
-        (!guessBox || board[box].length < board[guessBox].length)) {
-        guessBox = board[box];
+      console.log(guessBox);
+      if (board[box].length > 1 && (!guessBox || (guessBox && board[box].length < board[guessBox].length))) {
+        guessBox = box;
       }
     });
 
@@ -220,13 +220,15 @@ export default class SudokuContainer extends React.Component {
   }
 
   _checkSolved(board) {
+    let solved = true;
+
     BOXES.forEach((box) => {
       if (board[box].length !== 1) {
-        return false;
+        solved = false;
       }
     });
 
-    return true;
+    return solved;
   }
 
 
@@ -250,18 +252,18 @@ export default class SudokuContainer extends React.Component {
 
 
   /**
-   * _boardInavlid - internal method to return whether the given board
+   * _boardInvalid - internal method to return whether the given board
    * is invalid.
    *
    * @param  {object} board the board to check
    * @return {object}       whether th board is invalid
    */
-  _boardInavlid(board) {
-    for (const key in board) {
-      if (!board[key].length) {
+  _boardInvalid(board) {
+    BOXES.forEach((box) => {
+      if (board[box].length === 0) {
         return true;
       }
-    }
+    });
 
     return false;
   }

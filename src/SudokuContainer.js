@@ -1,9 +1,6 @@
 import React from 'react';
 import Sudoku from './Sudoku.js';
 
-const BOARD_HEIGHT = 9;
-const BOARD_LENGTH = 9;
-
 const _cross = (a, b) => {
   const crossResult = [];
 
@@ -83,7 +80,65 @@ export default class SudokuContainer extends React.Component {
       board[box] = '';
     });
 
-    this.state = {board};
+    this.state = {board, unsolvable: false};
+  }
+
+
+  /**
+   * handleChange - takes the location and input event and sets the square
+   * at the location equal to the value of the input.
+   *
+   * @param  {string} loc board representation location of the square
+   * @param  {object} e   the input event
+   * @return {void}
+   */
+  handleChange(loc, e) {
+    const value = e.target.value;
+    if (value && (value < 1 || value > 9)) return;
+
+    const board = this.state.board;
+    const solution = this.state.solution;
+
+    board[loc] = e.target.value;
+
+    this.setState({board});
+  }
+
+
+  /**
+   * solve - starting point for the solve functionality. Searches the board
+   * for solutions and if found, sets the display board's state to the
+   * solution and returns true. Otherwise, change 'unsolvable' state to false
+   * and display the 'unsolvable' notification.
+   *
+   * @return {boolean}  whether the board is solvable
+   */
+  solve() {
+    const solution = this.search(this._createSolutionBoard());
+
+    if (solution) {
+      this.setState({board: solution});
+
+      return true;
+    }
+    this.setState({unsolvable: true})
+    return false;
+  }
+
+
+  /**
+   * clear - clears the current board values
+   *
+   * @return {void}
+   */
+  clear() {
+    const board = this.state.board;
+
+    for (const box in board) {
+      board[box] = '';
+    }
+
+    this.setState({board, unsolvable: false});
   }
 
 
@@ -106,6 +161,7 @@ export default class SudokuContainer extends React.Component {
 
     return board;
   }
+
 
   /**
    * onlyChoice - Iterates through the solution board and finds boxes with
@@ -144,21 +200,32 @@ export default class SudokuContainer extends React.Component {
   //   });
   // }
 
+
+  /**
+   * reduce - A more or less literal reduce function in this context,
+   *  combining all elmination strategies and checking board validity.
+   *
+   * @param  {object} board the current board to process
+   * @return {object|boolean}       either the processed board or false if invalid
+   */
   reduce(board) {
     let stalled = false;
 
     while (!stalled) {
+      // Check how many squares are solved before elimination functions
       const solvedBefore = this._getSolvedBoxes(board).length;
 
+      // Run the elimination functions
       this.eliminate(board);
       this.onlyChoice(board);
 
+      // Check how many squares are solved after elimination functions
       const solvedAfter = this._getSolvedBoxes(board).length;
 
+      // See if the reduction was any change to the board
       stalled = solvedBefore === solvedAfter;
-      console.log(solvedAfter);
-      console.log('checking for invalid board...');
 
+      // Check if the board is invalid and return false if it is
       if (this._boardInvalid(board)) {
         return false;
       }
@@ -168,36 +235,49 @@ export default class SudokuContainer extends React.Component {
   }
 
 
+  /**
+   * search - run through the search process by reducing the board,
+   * checking for invalid boards, checking for solved boards, and then
+   * constructing and traversing the solution state search tree as
+   * necessary. Returns a solved board or void.
+   *
+   * @param  {object} board the board to search
+   * @return {object|void}       solved board or void
+   */
   search(board) {
-    console.log('Using elimination strategies...');
-
+    // Reduce elimination functions on the board
     const reducedBoard = this.reduce(board);
-    console.log(reducedBoard);
+
+    // Check for inavlid board
     if (reducedBoard === false) {
-      console.log('Invalid board recognized!');
       return false;
     }
 
-    console.log('Checking for solved board...');
-
+    // Check for solved board
     if (this._checkSolved(reducedBoard)) {
-      console.log('Solution Found!');
       return reducedBoard;
     }
 
-    let guessBox = '';
+    /*
+     * Iterate through all the boxes and find an unsolved square (guessBox)
+     *  with the fewest possibilities. This speeds up the efficiency of our
+     * search a bit by limiting branching near the root; we would hit a lot of
+     * invalid solutions first if we didn't do this.
+     */
+    let guessBox;
 
-    console.log('Building search tree...');
-    // Iterate through all the boxes and find an unfilled square with
-    // the fewest possibilities
     BOXES.forEach((box) => {
-      console.log(guessBox);
       if (reducedBoard[box].length > 1 && (!guessBox || (guessBox && reducedBoard[box].length < reducedBoard[guessBox].length))) {
         guessBox = box;
       }
     });
 
-    console.log('Searching tree...');
+    /*
+     * Iterate through the possible values of the chosen square and try them,
+     * creating a copy of the board for each value and recursively search
+     * through them. If a completed board is found, return it, otherwise
+     * discard and move on.
+     */
     const options = reducedBoard[guessBox];
 
     for (let option = 0; option < guessBox.length; option++) {
@@ -207,25 +287,19 @@ export default class SudokuContainer extends React.Component {
 
       if (attempt) return attempt;
     }
-
-    console.log('SHOULD NOT GET HERE!!');
   }
 
 
-  solve() {
-    console.log('Starting Solve');
-    const solution = this.search(this._createSolutionBoard());
-
-    if (solution) {
-      this.setState({board: solution});
-
-      return true;
-    }
-
-    console.error('Solve Failed!');
-    console.log(solution);
-  }
-
+  /**
+   * _checkSolved - helper function to check whether the board is solved. This
+   * is mainly for syntactic sugar. We already have a _getSolvedBoxes
+   * functions, and we could simply test the length, but I wanted something
+   * that simply returns a boolean and didn't feel the need to waste memory if
+   * we weren't using the returned solvedBoxes array.
+   *
+   * @param  {object} board the board to check
+   * @return {boolean}       whether the board is solved
+   */
   _checkSolved(board) {
     let solved = true;
 
@@ -276,6 +350,14 @@ export default class SudokuContainer extends React.Component {
   }
 
 
+  /**
+   * _createSolutionBoard - turns the display board state of inputs into a
+   * 'solution board' with values equal to the remaining available choices.
+   * So, for an empty square, the value gets initialized as '123456789'. For a
+   * solved/input square, the value gets initialized as that value (i.e. '1').
+   *
+   * @return {object} the initial constructed solution board.
+   */
   _createSolutionBoard() {
     const board = Object.assign({}, this.state.board);
 
@@ -285,37 +367,17 @@ export default class SudokuContainer extends React.Component {
       }
     }
 
-    console.log('Solution Board Created!');
-    console.log(board);
     return board;
-  }
-
-  /**
-   * handleChange - takes the location and input event and sets the square
-   * at the location equal to the value of the input.
-   *
-   * @param  {string} loc board representation location of the square
-   * @param  {object} e   the input event
-   * @return {void}
-   */
-  handleChange(loc, e) {
-    const value = e.target.value;
-    if (value && (value < 1 || value > 9)) return;
-
-    const board = this.state.board;
-    const solution = this.state.solution;
-
-    board[loc] = e.target.value;
-
-    this.setState({board});
   }
 
   render() {
     return (
       <Sudoku
         board={this.state.board}
+        clear={this.clear.bind(this)}
         handleChange={this.handleChange.bind(this)}
-        solve={this.solve.bind(this)} />
+        solve={this.solve.bind(this)}
+        unsolvable={this.state.unsolvable} />
     );
   }
 }

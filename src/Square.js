@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/* Display component for a single sudoku square */
 export default class Square extends React.Component {
   render() {
     return (

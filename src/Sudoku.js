@@ -1,36 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Square from './Square.js';
+import SudokuBoard from './SudokuBoard.js';
 
+/* Display component for sudoku board and control components */
 export default class Sudoku extends React.Component {
   render () {
-    const board = this.props.board;
-    const squares = [];
-    for (const key in board) {
-      if (key) {
-        squares.push(
-          <Square
-            key={key}
-            handleChange={this.props.handleChange.bind(this, key)}
-            value={board[key]} />
-        );
-      }
-    }
 
     return (
       <div className="sudoku">
         <h1>sudoku solver</h1>
         <p>enter initial values and press 'solve'</p>
-        <div className="sudoku-board">
-          <span className="cross-line top"></span>
-          <span className="cross-line bottom"></span>
-          <span className="cross-line left"></span>
-          <span className="cross-line right"></span>
-          {squares}
-        </div>
+
+        <SudokuBoard
+          board={this.props.board}
+          handleChange={this.props.handleChange}/>
+
+        <button className="clear-button" onClick={this.props.clear}>
+          clear
+        </button>
         <button className="solve-button" onClick={this.props.solve}>
           solve
         </button>
+
+        {this.props.unsolvable &&
+          <p className="unsolvable">whoops, this board is unsolvable!</p>
+        }
       </div>
     );
   }
@@ -40,4 +34,5 @@ Sudoku.propTypes = {
   board: PropTypes.object.isRequired,
   handleChange: PropTypes.func.isRequired,
   solve: PropTypes.func.isRequired,
+  unsolvable: PropTypes.bool.isRequired,
 };

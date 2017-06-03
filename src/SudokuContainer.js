@@ -191,14 +191,6 @@ export default class SudokuContainer extends React.Component {
     return board;
   }
 
-  // nakedTwins() {
-  //   ALL_UNITS.forEach((unit) => {
-  //     const twinBoxes = [];
-  //     const twinValues = [];
-  //     const twins = [];
-  //   });
-  // }
-
 
   /**
    * reduce - A more or less literal reduce function in this context,

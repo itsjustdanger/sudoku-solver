@@ -7,6 +7,7 @@ export default class SudokuBoard extends React.Component {
   render() {
     const board = this.props.board;
     const squares = [];
+
     for (const box in board) {
       if (box) {
         squares.push(
@@ -32,4 +33,5 @@ export default class SudokuBoard extends React.Component {
 
 SudokuBoard.propTypes = {
   board: PropTypes.object.isRequired,
+  handleChange: PropTypes.func.isRequired,
 }

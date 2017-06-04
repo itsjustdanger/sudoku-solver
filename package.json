@@ -7,9 +7,13 @@
     "react-dom": "^15.5.4"
   },
   "devDependencies": {
+    "enzyme": "^2.8.2",
     "gh-pages": "^1.0.0",
     "prop-types": "^15.5.10",
-    "react-scripts": "1.0.7"
+    "react-addons-test-utils": "^15.5.1",
+    "react-dom": "^15.5.4",
+    "react-scripts": "1.0.7",
+    "react-test-renderer": "^15.5.4"
   },
   "scripts": {
     "start": "react-scripts start",

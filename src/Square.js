@@ -9,7 +9,7 @@ export default class Square extends React.Component {
         className="square"
         maxLength={1}
         onChange={this.props.handleChange}
-        type="text"
+        type="number"
         value={this.props.value} />
     );
   }

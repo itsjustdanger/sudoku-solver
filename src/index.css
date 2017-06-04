@@ -28,6 +28,13 @@ p {
   margin: 20px 0;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .sudoku-board {
   border: 2px solid #000;
   display: flex;

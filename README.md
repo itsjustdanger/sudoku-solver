@@ -2,7 +2,7 @@
 This is a simple React implementation of a Sudoku Solver to illustrate the
 basics of constraint propagation.
 
-[Checkout the live version](https://itsjustdanger.github.io/sudoku-solver/)
+[Check out the live version](https://itsjustdanger.github.io/sudoku-solver/)
 
 ## Constraint Propagation
 The constraints here are the rules of Sudoku, and we satisfy our constraints by eliminating from squares the values that violate those constraints.

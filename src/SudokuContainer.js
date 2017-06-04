@@ -117,7 +117,6 @@ export default class SudokuContainer extends React.Component {
 
     if (solution) {
       this.setState({board: solution});
-
       return true;
     }
     this.setState({unsolvable: true})
